@@ -9,6 +9,7 @@ import com.example.service.UserService;
 
 public class LoginServlet extends HttpServlet {
 
+    @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {
@@ -21,9 +22,16 @@ public class LoginServlet extends HttpServlet {
         UserService service = new UserService();
 
         if(service.checkLogin(user)){
-            request.setAttribute("username", username);
-            request.getRequestDispatcher("home.jsp")
-                   .forward(request, response);
+            HttpSession session = request.getSession();
+            session.setAttribute("username", username);
+
+            if ("admin".equals(username)) {
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            } else {
+                request.setAttribute("username", username);
+                request.getRequestDispatcher("home.jsp")
+                       .forward(request, response);
+            }
         } else {
             request.getRequestDispatcher("error.jsp")
                    .forward(request, response);
