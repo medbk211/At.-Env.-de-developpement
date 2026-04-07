@@ -1,6 +1,28 @@
 # LoginMVC Server Guide
 
-This file explains exactly how to start and stop the local server for this project.
+This project now follows a professional Maven-style structure:
+
+```text
+LoginMVC/
+|- src/
+|  \- main/
+|     |- java/com/example/project/
+|     |  |- controller/
+|     |  |- service/
+|     |  |- dao/
+|     |  |- model/
+|     |  \- util/
+|     |- resources/
+|     |  \- application.properties
+|     \- webapp/
+|        |- views/
+|        |- css/
+|        |- js/
+|        \- WEB-INF/
+|- lib/
+|- scripts/
+|- pom.xml
+```
 
 ## 1) Requirements
 
@@ -12,7 +34,7 @@ Current project path:
 
 `E:\DSI2\s2\At. Env. de developpement\LoginMVC`
 
-## 2) Easiest Way (One Command)
+## 2) Start The App
 
 From project root:
 
@@ -20,104 +42,70 @@ From project root:
 run.bat
 ```
 
-You can also double-click `run.bat` from File Explorer.
+This script now:
 
-To stop:
+- compiles Java sources from `src/main/java`
+- copies `src/main/resources` into the compiled classes output
+- deploys `src/main/webapp` to Tomcat
+- copies project jars from `lib` into `WEB-INF/lib`
+- starts Tomcat and prints the application URL
+
+Default URL:
+
+`http://localhost:8090/LoginMVC/`
+
+If your Tomcat connector is not `8090`, use the URL printed by the script.
+
+## 3) Stop The App
+
+From project root:
 
 ```bat
 stop.bat
 ```
 
-## 3) Quick Start (PowerShell)
-
-From project root:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\start-server.ps1
-```
-
-This command does all of this automatically:
-
-- compiles Java sources from `src`
-- deploys `webapp` + compiled classes to Tomcat `webapps/LoginMVC`
-- starts Tomcat
-- prints the application URL
-
-Open in browser:
-
-`http://localhost:8090/LoginMVC/login.jsp`
-
-If your Tomcat connector is not `8090`, use the URL printed by the script.
-
-## 4) Stop Server (Graceful)
-
-From project root:
+Or directly:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\stop-server.ps1
 ```
 
-## 5) Force Stop (If Still Running)
+## 4) Optional Maven Build
 
-If graceful stop does not terminate Java/Tomcat:
+The project now includes `pom.xml`.
 
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\stop-server.ps1 -Force
-```
-
-## 6) Manual Commands (Without Scripts)
-
-Use these only if you want full manual control.
-
-### 5.1 Compile classes
+If Maven is installed on your machine, you can package the app with:
 
 ```powershell
-New-Item -ItemType Directory -Force -Path .dist\build\classes | Out-Null
-$srcFiles = Get-ChildItem src -Recurse -Filter *.java | ForEach-Object { $_.FullName }
-javac -encoding UTF-8 -cp ".dist\apache-tomcat-10.1.52\lib\*" -d ".dist\build\classes" $srcFiles
+mvn clean package
 ```
 
-### 5.2 Deploy to Tomcat webapps
+Generated artifact:
 
-```powershell
-$appPath = ".dist\apache-tomcat-10.1.52\webapps\LoginMVC"
-if (Test-Path $appPath) { Remove-Item -Recurse -Force $appPath }
-New-Item -ItemType Directory -Force -Path $appPath | Out-Null
-Copy-Item webapp\* $appPath -Recurse -Force
-New-Item -ItemType Directory -Force -Path "$appPath\WEB-INF\classes" | Out-Null
-Copy-Item .dist\build\classes\* "$appPath\WEB-INF\classes" -Recurse -Force
-```
+`target/LoginMVC.war`
 
-### 5.3 Start Tomcat
+## 5) Configuration
 
-```powershell
-$tomcat = (Resolve-Path ".dist\apache-tomcat-10.1.52").Path
-$javac = (Get-Command javac).Source
-$env:JAVA_HOME = Split-Path (Split-Path $javac -Parent) -Parent
-$env:CATALINA_HOME = $tomcat
-$env:CATALINA_BASE = $tomcat
-& "$tomcat\bin\startup.bat"
-```
+Database configuration lives in:
 
-### 5.4 Stop Tomcat
+`src/main/resources/application.properties`
 
-```powershell
-$tomcat = (Resolve-Path ".dist\apache-tomcat-10.1.52").Path
-$javac = (Get-Command javac).Source
-$env:JAVA_HOME = Split-Path (Split-Path $javac -Parent) -Parent
-$env:CATALINA_HOME = $tomcat
-$env:CATALINA_BASE = $tomcat
-& "$tomcat\bin\shutdown.bat"
-```
+Environment variables still override properties when present:
 
-## 7) Credentials for Test
+- `DB_HOST`
+- `DB_PORT`
+- `DB_NAME`
+- `DB_USER`
+- `DB_PASSWORD`
+
+## 6) Credentials For Test
 
 - username: `admin`
 - password: `1234`
 
-## 8) Troubleshooting
+## 7) Troubleshooting
 
-- If `8080` is busy, change Tomcat HTTP connector port in:
-  `.dist\apache-tomcat-10.1.x\conf\server.xml`
-- If script says Tomcat not found, verify folder exists under `.dist`
-- If Java not found, install JDK and restart terminal
+- If `8080` or `8090` is busy, change the Tomcat HTTP connector port in `.dist\apache-tomcat-10.1.x\conf\server.xml`
+- If the script says Tomcat not found, verify a Tomcat folder exists under `.dist`
+- If Java is not found, install a JDK and restart the terminal
+- If Maven is not found, keep using `run.bat`; Maven support is optional

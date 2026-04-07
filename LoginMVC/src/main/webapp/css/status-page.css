@@ -1,0 +1,65 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(251, 191, 36, 0.25), transparent 32%),
+        linear-gradient(135deg, #f8fafc, #dbeafe);
+    color: #12243c;
+}
+
+.status-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+.error-theme {
+    background:
+        radial-gradient(circle at top left, rgba(248, 113, 113, 0.24), transparent 32%),
+        linear-gradient(135deg, #fff7ed, #fee2e2);
+}
+
+.status-card {
+    width: min(520px, 100%);
+    padding: 36px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 28px 60px rgba(15, 23, 42, 0.12);
+    text-align: center;
+}
+
+.eyebrow {
+    margin: 0 0 10px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0f766e;
+}
+
+h1 {
+    margin: 0 0 12px;
+    font-size: 34px;
+}
+
+p {
+    margin: 0 0 22px;
+    line-height: 1.6;
+    color: #475569;
+}
+
+a {
+    display: inline-block;
+    padding: 12px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #0f766e, #1d4ed8);
+}
